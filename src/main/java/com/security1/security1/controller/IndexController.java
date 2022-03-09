@@ -4,6 +4,8 @@ import com.security1.security1.model.User;
 import com.security1.security1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,5 +53,16 @@ public class IndexController {
         user.setPassword(encPassword);
         userRepository.save(user); //비밀번호 1234 => 시큐리티로 로그인 할 수 없음, 비번이 암호화가 안됐기때문에 암호화를 해야함
         return "redirect:/loginForm";
+    }
+
+    @Secured("ROLE_ADMIN")
+    @GetMapping("/info")
+    public @ResponseBody String info(){
+        return "개인정보";
+    }
+    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')") //메서드가 실행 직전에 검증
+    @GetMapping("/data")
+    public @ResponseBody String data(){
+        return "데이터 정보";
     }
 }
